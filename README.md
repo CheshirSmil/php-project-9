@@ -3,4 +3,8 @@
 
 [![CI](https://github.com/CheshirSmil/php-project-9/actions/workflows/lint.yml/badge.svg)](https://github.com/CheshirSmil/php-project-9/actions/workflows/lint.yml)
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/de3fb5ce53d8fbcea04a/maintainability)](https://codeclimate.com/github/CheshirSmil/php-project-9/maintainability)
+
+[![Test Coverage](https://api.codeclimate.com/v1/badges/de3fb5ce53d8fbcea04a/test_coverage)](https://codeclimate.com/github/CheshirSmil/php-project-9/test_coverage)
+
 https://php-project-9-production-ce81.up.railway.app/
