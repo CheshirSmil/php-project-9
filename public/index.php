@@ -76,7 +76,7 @@ $app -> post('/clearurls', function ($req, $resp) use ($router) {
     return $resp -> withRedirect($router -> urlFor('main'), 302);
 });
 
-$app -> post('/urls', function($req, $resp) use ($router) {
+$app -> post('/urls', function ($req, $resp) use ($router) {
     $inputedURL = $req -> getParsedBodyParam('url', null);
 
     if ($inputedURL === null) {
@@ -95,7 +95,8 @@ $app -> post('/urls', function($req, $resp) use ($router) {
         -> rule('contains', 'host', '.');
 
     if (!($validator->validate())) {
-        return $this -> get('renderer') -> render($resp, 'main.phtml', ['badURL' => true, 'inputedURL' => $inputedURL['name']]);
+        return $this -> get('renderer')
+            -> render($resp, 'main.phtml', ['badURL' => true, 'inputedURL' => $inputedURL['name']]);
     }
 
     $connection = getConnectionToDB();
@@ -106,33 +107,34 @@ $app -> post('/urls', function($req, $resp) use ($router) {
     $queryForExisting = "SELECT COUNT(*) AS counts FROM urls WHERE name='{$scheme}://{$host}'";
     $resOfQueryForExisting = $connection->query($queryForExisting);
     if (($resOfQueryForExisting -> fetch())['counts'] === 0) {
-        $queryForInsertNewData = "INSERT INTO urls (name, created_at) VALUES ('{$scheme}://{$host}', current_timestamp)";
+        $queryForInsertNewData = "INSERT INTO urls (name, created_at) VALUES 
+                                        ('{$scheme}://{$host}', current_timestamp)";
         $connection->query($queryForInsertNewData);
         $this -> get('flash') -> addMessage('success', 'Страница успешно добавлена');
     } else {
         $this -> get('flash') -> addMessage('warning', 'Страница уже существует');
     }
     return $resp -> withRedirect($router -> urlFor('main'), 302);
-
 });
 
-function redirectToMainWithInternalError($DIContainer, $resp, $router) {
-    $DIContainer -> get('flash') -> addMessage('error', 'Возникла внутренняя ошибка сервера. Попробуйте выполнить действие позже.');
+function redirectToMainWithInternalError($DIContainer, $resp, $router)
+{
+    $DIContainer -> get('flash')
+        -> addMessage('error', 'Возникла внутренняя ошибка сервера. Попробуйте выполнить действие позже.');
     return $resp -> withRedirect($router -> urlFor('main'), 302);
 }
 
-function getConnectionToDB() {
+function getConnectionToDB()
+{
     $dbDriver = 'pgsql';
     $dbHost = 'localhost';
     $dbPort = '5432';
     $dbName = 'project9test';
     $dbUserName = 'Dragon';
     $dbUserPassword = 'qwe';
-    $connectionString = "{$dbDriver}:host={$dbHost};port={$dbPort};dbname={$dbName};";
-    try {
+    $connectionString = "{$dbDriver}:host={$dbHost};port={$dbPort};dbname={$dbName};";try {
         return new PDO($connectionString, $dbUserName, $dbUserPassword, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-    }
-    catch (Exception) {
+    } catch (Exception) {
         return false;
     }
 }
