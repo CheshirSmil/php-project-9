@@ -29,7 +29,24 @@
     </nav>
 </header>
 
+<?php
+function getStyleForAlert($messagesGroup) {
+    if ($messagesGroup === 'success') {
+        return 'alert-success';
+    };
+    if ($messagesGroup === 'warning') {
+        return 'alert-info';
+    };
+    return 'alert-danger';
+}
 
+if (isset($messages)):
+    foreach ($messages as $messagesGroup => $messagesOfGroup):
+        foreach ($messagesOfGroup as $message): ?>
+            <div class="alert <?= getStyleForAlert($messagesGroup)?>" role="alert"><?= $message?></div>
+        <?php endforeach;
+    endforeach;
+endif; ?>
 
 
 <main class="flex-grow-1">
@@ -54,7 +71,7 @@
                                 <a href="/urls/<?= $url['id']?>"><?= $url['name']?></a>
                             </td>
                             <td>
-
+                                <?=$url['lastCheckTime']?>
                             </td>
                             <td>
 

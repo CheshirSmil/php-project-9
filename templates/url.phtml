@@ -31,6 +31,24 @@
 </header>
 
 
+<?php
+function getStyleForAlert($messagesGroup) {
+    if ($messagesGroup === 'success') {
+        return 'alert-success';
+    };
+    if ($messagesGroup === 'warning') {
+        return 'alert-info';
+    };
+    return 'alert-danger';
+}
+
+if (isset($messages)):
+    foreach ($messages as $messagesGroup => $messagesOfGroup):
+        foreach ($messagesOfGroup as $message): ?>
+            <div class="alert <?= getStyleForAlert($messagesGroup)?>" role="alert"><?= $message?></div>
+        <?php endforeach;
+    endforeach;
+endif; ?>
 
 
 <main class="flex-grow-1">
@@ -55,7 +73,7 @@
             </table>
         </div>
         <h2 class="mt-5 mb-3">Проверки</h2>
-        <form method="post" action="/urls/1/checks">
+        <form method="post" action="/urls/<?= $url['id']?>/checks">
             <input type="submit" class="btn btn-primary" value="Запустить проверку">
         </form>
         <table class="table table-bordered table-hover" data-test="checks">
@@ -68,6 +86,18 @@
                 <th>description</th>
                 <th>Дата создания</th>
             </tr>
+            <?php if (isset($urlChecks)):
+                foreach ($urlChecks as $check):?>
+                    <tr>
+                        <td><?=$check['id']?></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><?=$check['created_at']?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endif;?>
             </tbody>
         </table>
     </div>
