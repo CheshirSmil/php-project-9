@@ -30,50 +30,36 @@
     </nav>
 </header>
 
-
-<?php
-function getStyleForAlert($messagesGroup) {
-    if ($messagesGroup === 'success') {
-        return 'alert-success';
-    };
-    if ($messagesGroup === 'warning') {
-        return 'alert-info';
-    };
-    return 'alert-danger';
-}
-
-if (isset($messages)):
-    foreach ($messages as $messagesGroup => $messagesOfGroup):
-        foreach ($messagesOfGroup as $message): ?>
-            <div class="alert <?= getStyleForAlert($messagesGroup)?>" role="alert"><?= $message?></div>
-        <?php endforeach;
-    endforeach;
-endif; ?>
-
+<?php if ($flash['success']) : ?>
+    <div class="alert alert-success" role="alert"><?= $flash['success'][0] ?></div>
+<?php endif; ?>
+<?php if ($flash['failure']) : ?>
+    <div class="alert alert-danger" role="alert"><?= $flash['failure'][0] ?></div>
+<?php endif; ?>
 
 <main class="flex-grow-1">
     <div class="container-lg mt-3">
-        <h1>Сайт: https://mail.ru</h1>
+        <h1><?= $url['name'] ?></h1>
         <div class="table-responsive">
             <table class="table table-bordered table-hover text-nowrap" data-test="url">
                 <tbody>
                 <tr>
                     <td>ID</td>
-                    <td><?= $url['id']?></td>
+                    <td><?= $url['id'] ?></td>
                 </tr>
                 <tr>
                     <td>Имя</td>
-                    <td><?= $url['name']?></td>
+                    <td><?= $url['name'] ?></td>
                 </tr>
                 <tr>
                     <td>Дата создания</td>
-                    <td><?= $url['created_at']?></td>
+                    <td><?= $url['created_at'] ?></td>
                 </tr>
                 </tbody>
             </table>
         </div>
         <h2 class="mt-5 mb-3">Проверки</h2>
-        <form method="post" action="/urls/<?= $url['id']?>/checks">
+        <form method="post" action="/urls/<?= $url['id'] ?>/checks">
             <input type="submit" class="btn btn-primary" value="Запустить проверку">
         </form>
         <table class="table table-bordered table-hover" data-test="checks">
@@ -86,22 +72,21 @@ endif; ?>
                 <th>description</th>
                 <th>Дата создания</th>
             </tr>
-            <?php if (isset($urlChecks)):
-                foreach ($urlChecks as $check):?>
-                    <tr>
-                        <td><?=$check['id']?></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td><?=$check['created_at']?></td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif;?>
+            <?php foreach ($checks as $check) : ?>
+                <tr>
+                    <td><?= $check['id'] ?></td>
+                    <td><?= $check['status_code'] ?? '' ?></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><?= $check['created_at'] ?></td>
+                </tr>
+            <?php endforeach; ?>
             </tbody>
         </table>
     </div>
 </main>
+
 <footer class="border-top py-3 mt-5 flex-shrink-0">
     <div class="container-lg">
         <div class="text-center">

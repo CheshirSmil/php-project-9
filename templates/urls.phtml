@@ -29,26 +29,6 @@
     </nav>
 </header>
 
-<?php
-function getStyleForAlert($messagesGroup) {
-    if ($messagesGroup === 'success') {
-        return 'alert-success';
-    };
-    if ($messagesGroup === 'warning') {
-        return 'alert-info';
-    };
-    return 'alert-danger';
-}
-
-if (isset($messages)):
-    foreach ($messages as $messagesGroup => $messagesOfGroup):
-        foreach ($messagesOfGroup as $message): ?>
-            <div class="alert <?= getStyleForAlert($messagesGroup)?>" role="alert"><?= $message?></div>
-        <?php endforeach;
-    endforeach;
-endif; ?>
-
-
 <main class="flex-grow-1">
     <div class="container-lg mt-3">
         <h1>Сайты</h1>
@@ -61,29 +41,20 @@ endif; ?>
                     <th>Последняя проверка</th>
                     <th>Код ответа</th>
                 </tr>
-                <?php if (isset($urls)):
-                    foreach ($urls as $url): ?>
-                        <tr>
-                            <td>
-                                <?= $url['id']?>
-                            </td>
-                            <td>
-                                <a href="/urls/<?= $url['id']?>"><?= $url['name']?></a>
-                            </td>
-                            <td>
-                                <?=$url['lastCheckTime']?>
-                            </td>
-                            <td>
-
-                            </td>
-                        </tr>
-                    <?php   endforeach;
-                endif; ?>
+                <?php foreach ($urls as $url) : ?>
+                    <tr>
+                        <td><?= $url['id'] ?></td>
+                        <td><a href="/urls/<?= $url['id'] ?>"><?= $url['name'] ?></a></td>
+                        <td><?= $url['last_check_time'] ?></td>
+                        <td><?= $url['status_code'] ?></td>
+                    </tr>
+                <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
     </div>
 </main>
+
 <footer class="border-top py-3 mt-5 flex-shrink-0">
     <div class="container-lg">
         <div class="text-center">
