@@ -7,4 +7,10 @@
 
 [![Test Coverage](https://api.codeclimate.com/v1/badges/de3fb5ce53d8fbcea04a/test_coverage)](https://codeclimate.com/github/CheshirSmil/php-project-9/test_coverage)
 
+### Requirements
+
+- PHP: >=7.4
+- Composer: 2.3
+- Postgresql: 12+
+
 https://php-project-9-production-ce81.up.railway.app/
