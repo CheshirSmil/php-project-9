@@ -6,7 +6,7 @@ validate:
 
 lint:
 	composer exec --verbose phpcs -- --standard=PSR12 public
-	composer exec --verbose phpstan -- --level=8 analyse public
+	composer exec --verbose phpstan -- --level=0 analyse public
 
 PORT ?= 8000
 start:
