@@ -116,6 +116,7 @@ $app->post('/urls', function ($request, $response) use ($router) {
                 $idFound = $item['id'];
             }
         }
+        $newId = null;
         if (!isset($urlFound)) {
             try {
                 $pdo = Connection::get()->connect();

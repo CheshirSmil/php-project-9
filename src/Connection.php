@@ -20,8 +20,19 @@ class Connection
      */
     public function connect()
     {
-        // чтение параметров в файле конфигурации ini
-        $params = parse_ini_file('database.ini');
+        if (getenv('DATABASE_URL')) {
+            $databaseUrl = parse_url(getenv('DATABASE_URL'));
+        }
+        if (isset($databaseUrl['host'])) {       // необходимо проверять произвольное поле,
+            // потому что по умолчанию запишет в $databaseUrl почти пустой массив
+            $params['host'] = $databaseUrl['host'];
+            $params['port'] = $databaseUrl['port'];
+            $params['database'] = ltrim($databaseUrl['path'], '/');
+            $params['user'] = $databaseUrl['user'];
+            $params['password'] = $databaseUrl['pass'];
+        } else {
+            $params = parse_ini_file('database.ini');
+        }
         if ($params === false) {
             throw new \Exception("Error reading database configuration file");
         }
