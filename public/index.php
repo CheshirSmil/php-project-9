@@ -11,6 +11,19 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;
 use DiDom\Document;
 
+session_start();
+
+if (!isset($_SESSION['start'])) {
+    $pdo = Connection::get()->connect();
+    if (Misc\tableExists($pdo, "url_checks")) {
+        $pdo->exec("TRUNCATE url_checks");
+    }
+    if (Misc\tableExists($pdo, "urls")) {
+        $pdo->exec("TRUNCATE urls CASCADE");
+    }
+    $_SESSION['start'] = true;
+}
+
 if (PHP_SAPI === 'cli-server' && $_SERVER['SCRIPT_FILENAME'] !== __FILE__) {
     return false;
 }
@@ -34,8 +47,6 @@ try {
 } catch (\PDOException $e) {
     echo $e->getMessage();
 }
-
-session_start();
 
 $container = new Container();
 $container->set('renderer', function () {
@@ -70,19 +81,19 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, array $args) 
         $this->get('flash')->addMessage('failure', 'Произошла ошибка при проверке, не удалось подключиться');
     }
     $document = new Document($checkedUrl, true);
-    if ($document->has('h1')) {
-        $h1 = $document->find('h1');
-        $check['h1'] = $h1[0]->text();
+    $h1 = optional($document->first('h1'));
+    if ($h1 !== null) {
+        $check['h1'] = $h1->text();
     }
-    if ($document->has('title')) {
-        $title = $document->find('title');
-        $check['title'] = $title[0]->text();
+    $title = optional($document->first('title'));
+    if ($title !== null) {
+        $check['title'] = $title->text();
     }
-    if ($document->has('meta[name=description]')) {
-        $desc = $document->find('meta[name=description]');
-        $check['description'] = $desc[0]->getAttribute('content');
+    $desc = optional($document->first('meta[name=description]'));
+    if ($desc !== null) {
+        $check['description'] = $desc->getAttribute('content');
     }
-    if ($check['status_code']) {
+    if (isset($check['status_code'])) {
         try {
             $query = new Query($pdo, 'url_checks');
             $newId = $query->insertValuesChecks($check);
@@ -91,8 +102,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, array $args) 
         }
         $this->get('flash')->addMessage('success', 'Страница успешно проверена');
     }
-
-    return $response->withRedirect($router->urlFor('url_url_info', ['id' => $args['url_id']]), 302);
+    return $response->withRedirect($router->urlFor('url_info', ['id' => $args['url_id']]), 302);
 });
 
 // 4
@@ -100,7 +110,7 @@ $app->post('/urls', function ($request, $response) use ($router) {
     $url = $request->getParsedBodyParam('url');
     $url['date'] = date('Y-m-d H:i:s');
     $errors = [];
-    if (filter_var($url['name'], FILTER_VALIDATE_URL) === false) {
+    if ((filter_var($url['name'], FILTER_VALIDATE_URL) === false) or (!in_array(parse_url($url['name'], PHP_URL_SCHEME), ['http', 'https']))) {  // phpcs:ignore
         $errors['name'] = 'Некорректный URL';
     }
     if (strlen($url['name']) < 1) {
@@ -129,12 +139,11 @@ $app->post('/urls', function ($request, $response) use ($router) {
         } else {
             $this->get('flash')->addMessage('success', 'Страница уже существует');
         }
-        return $response->withRedirect($router->urlFor('url_url_info', ['id' => $idFound ?? $newId]), 302);
+        return $response->withRedirect($router->urlFor('url_info', ['id' => $idFound ?? $newId]), 302);
     }
     $params = ['url' => $url, 'errors' => $errors];
-    return $this->get('renderer')->render($response, "main.phtml", $params);
+    return $this->get('renderer')->render($response->withStatus(422), "main.phtml", $params);
 });
-
 // 2 show
 $app->get('/urls/{id}', function ($request, $response, $args) {
     $pdo = Connection::get()->connect();
@@ -151,7 +160,7 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
     $flashes = $this->get('flash')->getMessages();
     $params = ['url' => $urlFound, 'checks' => array_reverse($checks), 'flash' => $flashes];
     return $this->get('renderer')->render($response, 'url.phtml', $params);
-})->setName('url_url_info');
+})->setName('url_info');
 
 // 1 index
 $app->get('/urls', function ($request, $response) {
