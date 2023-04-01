@@ -31,7 +31,6 @@ try {
                                              description text,
                                              created_at timestamp)");
     }
-
 } catch (\PDOException $e) {
     echo $e->getMessage();
 }
