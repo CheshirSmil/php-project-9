@@ -2,6 +2,8 @@
 
 namespace Hexlet\Code;
 
+use Dotenv\Dotenv;
+
 /**
  * Создание класса Connection
  */
@@ -20,30 +22,30 @@ final class Connection
      */
     public function connect()
     {
-        if (getenv('DATABASE_URL')) {
-            $databaseUrl = parse_url(getenv('DATABASE_URL'));
-        }
-        if (isset($databaseUrl['host'])) {       // необходимо проверять произвольное поле,
-            // потому что по умолчанию запишет в $databaseUrl почти пустой массив
-            $params['host'] = $databaseUrl['host'];
-            $params['port'] = isset($databaseUrl['port']) ? $databaseUrl['port'] : null;
-            $params['database'] = isset($databaseUrl['path']) ? ltrim($databaseUrl['path'], '/') : null;
-            $params['user'] = isset($databaseUrl['user']) ? $databaseUrl['user'] : null;
-            $params['password'] = isset($databaseUrl['pass']) ? $databaseUrl['pass'] : null;
-        } else {
-            $params = parse_ini_file('database.ini');
-        }
-        if ($params === false) {
+        $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+        $dotenv->safeLoad();
+
+         $databaseUrl = parse_url($_ENV['DATABASE_URL']);
+        if (!$databaseUrl) {
             throw new \Exception("Error reading database configuration file");
         }
+
+            $params['host'] = $databaseUrl['host'];
+            $params['port'] = $databaseUrl['port'] ?? '';
+            $params['path'] = ltrim($databaseUrl['path'] ?? '', '/');
+            $params['user'] = $databaseUrl['user'] ?? '';
+            $params['pass'] = $databaseUrl['pass'] ?? '';
+
+            //var_dump($params);
+
         // подключение к базе данных postgresql
         $conStr = sprintf(
             "pgsql:host=%s;port=%d;dbname=%s;user=%s;password=%s",
             $params['host'],
             $params['port'],
-            $params['database'],
+            $params['path'],
             $params['user'],
-            $params['password']
+            $params['pass']
         );
         $pdo = new \PDO($conStr);
         $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);

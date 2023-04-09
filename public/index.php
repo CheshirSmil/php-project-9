@@ -104,7 +104,6 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, array $args) 
     return $response->withRedirect($router->urlFor('url_info', ['id' => $args['url_id']]), 302);
 });
 
-// 4
 $app->post('/urls', function ($request, $response) use ($router) {
     $url = $request->getParsedBodyParam('url');
     $url['date'] = date('Y-m-d H:i:s');
@@ -143,7 +142,7 @@ $app->post('/urls', function ($request, $response) use ($router) {
     $params = ['url' => $url, 'errors' => $errors];
     return $this->get('renderer')->render($response->withStatus(422), "main.phtml", $params);
 });
-// 2 show
+
 $app->get('/urls/{id}', function ($request, $response, $args) {
     $pdo = Connection::get()->connect();
     $allUrls = $pdo->query("SELECT * FROM urls")->fetchAll(\PDO::FETCH_ASSOC);
@@ -161,7 +160,6 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
     return $this->get('renderer')->render($response, 'url.phtml', $params);
 })->setName('url_info');
 
-// 1 index
 $app->get('/urls', function ($request, $response) {
     $pdo = Connection::get()->connect();
     $allUrls = $pdo->query("SELECT * FROM urls")->fetchAll(\PDO::FETCH_ASSOC);
