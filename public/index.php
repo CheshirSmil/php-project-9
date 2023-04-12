@@ -78,6 +78,8 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, array $args) 
         $check['status_code'] = $guzzleResponse->getStatusCode();
     } catch (TransferException $e) {
         $this->get('flash')->addMessage('failure', 'Произошла ошибка при проверке, не удалось подключиться');
+
+        return $response->withStatus(404)->withRedirect($router->urlFor('url_info', ['id' => $args['url_id']]));
     }
     $document = new Document($checkedUrl, true);
     $h1 = optional($document->first('h1'));
