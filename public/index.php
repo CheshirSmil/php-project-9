@@ -94,7 +94,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, array $args) 
     if ($desc !== null) {
         $check['description'] = $desc->getAttribute('content');
     }
-    if (isset($check['status_code'])) {
+    if ($check['status_code']) {
         try {
             $query = new Query($pdo, 'url_checks');
             $newId = $query->insertValuesChecks($check);
