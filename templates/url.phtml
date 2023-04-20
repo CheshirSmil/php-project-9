@@ -30,39 +30,41 @@
     </nav>
 </header>
 
-<?php if (isset($flash['success'])) : ?>
-    <div class="alert alert-success" role="alert"><?= $flash['success'][0] ?></div>
-<?php endif; ?>
-<?php if (isset($flash['failure'])) : ?>
-    <div class="alert alert-danger" role="alert"><?= $flash['failure'][0] ?></div>
-<?php endif; ?>
+<?php if (count($flash) > 0) : ?>
+    <?php foreach ($flash as $messages) : ?>
+        <?php foreach ($messages as $message) : ?>
+            <div class="alert alert-<?= $alert ?>" role="alert"><?= $message ?></div>
+        <?php endforeach ?>
+    <?php endforeach ?>
+<?php endif ?>
+
 
 <main class="flex-grow-1">
     <div class="container-lg mt-3">
-        <h1><?= $url['name'] ?></h1>
+        <h1>Сайт: <?= $data['name'] ?></h1>
         <div class="table-responsive">
-            <table class="table table-bordered table-hover text-nowrap" data-test="url">
+            <table data-test="url" class="table table-bordered table-hover text-nowrap" data-test="url">
                 <tbody>
                 <tr>
                     <td>ID</td>
-                    <td><?= $url['id'] ?></td>
+                    <td><?= $data['id'] ?></td>
                 </tr>
                 <tr>
                     <td>Имя</td>
-                    <td><?= $url['name'] ?></td>
+                    <td><?= $data['name'] ?></td>
                 </tr>
                 <tr>
                     <td>Дата создания</td>
-                    <td><?= $url['created_at'] ?></td>
+                    <td><?= $data['created_at'] ?></td>
                 </tr>
                 </tbody>
             </table>
         </div>
         <h2 class="mt-5 mb-3">Проверки</h2>
-        <form method="post" action="/urls/<?= $url['id'] ?>/checks">
+        <form method="post" action="/urls/<?= $data['id'] ?>/checks">
             <input type="submit" class="btn btn-primary" value="Запустить проверку">
         </form>
-        <table class="table table-bordered table-hover" data-test="checks">
+        <table class="table table-bordered table-hover mt-3" data-test="checks">
             <tbody>
             <tr>
                 <th>ID</th>
@@ -72,22 +74,16 @@
                 <th>description</th>
                 <th>Дата создания</th>
             </tr>
-            <?php foreach ($checks as $check) : ?>
+            <?php foreach ($checkData as $check) : ?>
                 <tr>
-                    <td><?= $check['id'] ?></td>
+                    <td><?= $check['id'] ?? '' ?></td>
                     <td><?= $check['status_code'] ?? '' ?></td>
-                    <td>
-                        <?= $check['h1'] ?? '' ?>
-                    </td>
-                    <td>
-                        <?= $check['title'] ?? '' ?>
-                    </td>
-                    <td>
-                        <?= $check['description'] ?? '' ?>
-                    </td>
-                    <td><?= $check['created_at'] ?></td>
+                    <td><?= $check['h1'] ?? '' ?></td>
+                    <td><?= $check['title'] ?? '' ?></td>
+                    <td><?= $check['description'] ?? '' ?></td>
+                    <td><?= $check['created_at'] ?? '' ?></td>
                 </tr>
-            <?php endforeach; ?>
+            <?php endforeach ?>
             </tbody>
         </table>
     </div>
