@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3ce4eb937301abff2d43ae8b98a03214",
+    "content-hash": "3fae7f3bfea0a278246457f0f7ba5e94",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -743,16 +743,16 @@
         },
         {
             "name": "illuminate/support",
-            "version": "v10.5.1",
+            "version": "v10.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "646bfb9e8485e5f82921512a19643f26bbb778d3"
+                "reference": "22f859b0d9947cc00bae7a66d76e4b78e2c27893"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/646bfb9e8485e5f82921512a19643f26bbb778d3",
-                "reference": "646bfb9e8485e5f82921512a19643f26bbb778d3",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/22f859b0d9947cc00bae7a66d76e4b78e2c27893",
+                "reference": "22f859b0d9947cc00bae7a66d76e4b78e2c27893",
                 "shasum": ""
             },
             "require": {
@@ -810,7 +810,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2023-03-29T13:12:38+00:00"
+            "time": "2023-04-15T21:53:23+00:00"
         },
         {
             "name": "imangazaliev/didom",
