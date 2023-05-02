@@ -30,14 +30,21 @@
     </nav>
 </header>
 
-<?php if (count($flash) > 0) : ?>
-    <?php foreach ($flash as $messages) : ?>
-        <?php foreach ($messages as $message) : ?>
-            <div class="alert alert-<?= $alert ?>" role="alert"><?= $message ?></div>
-        <?php endforeach ?>
-    <?php endforeach ?>
+<?php if (isset($flash['success'])) : ?>
+    <div class="alert alert-success" role="alert">
+        <?= $flash['success'][0] ?>
+    </div>
 <?php endif ?>
-
+<?php if (isset($flash['error'])) : ?>
+    <div class="alert alert-warning" role="alert">
+        <?= $flash['error'][0] ?>
+    </div>
+<?php endif ?>
+<?php if (isset($flash['danger'])) : ?>
+    <div class="alert alert-danger" role="alert">
+        <?= $flash['danger'][0] ?>
+    </div>
+<?php endif ?>
 
 <main class="flex-grow-1">
     <div class="container-lg mt-3">
