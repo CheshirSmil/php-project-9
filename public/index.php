@@ -101,7 +101,7 @@ $app->get('/urls', function ($request, $response) {
         'data' => $selectedUrls
     ];
     return $this->get('renderer')->render($response, 'urls.phtml', $params);
-})->setName('urls');
+})->setName('urls.index');
 
 $app->get('/urls/{id}', function ($request, $response, $args) {
     $messages = $this->get('flash')->getMessages();
@@ -127,7 +127,7 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
         ];
         return $this->get('renderer')->render($response, 'url.phtml', $params);
     }
-})->setName('url');
+})->setName('url.show');
 
 $app->post('/urls', function ($request, $response) use ($router) {
     $formData = $request->getParsedBody()['url'];
@@ -168,7 +168,7 @@ $app->post('/urls', function ($request, $response) use ($router) {
         $selectId = (string) $stmt->fetchColumn();
 
         $this->get('flash')->addMessage('success', 'Страница уже существует');
-        return $response->withRedirect($router->urlFor('url', ['id' => $selectId]));
+        return $response->withRedirect($router->urlFor('url.show', ['id' => $selectId]));
     }
 
     $sql = "INSERT INTO urls (name, created_at) VALUES (?, ?)";
@@ -177,7 +177,7 @@ $app->post('/urls', function ($request, $response) use ($router) {
     $lastInsertId = (string) $pdo->lastInsertId();
 
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
-    return $response->withRedirect($router->urlFor('url', ['id' => $lastInsertId]));
+    return $response->withRedirect($router->urlFor('url.show', ['id' => $lastInsertId]));
 });
 
 $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($router) {
@@ -205,7 +205,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
         } catch (ConnectException $e) {
             $errorMessage = 'Произошла ошибка при проверке, не удалось подключиться';
             $this->get('flash')->addMessage('danger', $errorMessage);
-            return $response->withRedirect($router->urlFor('url', ['id' => $id]));
+            return $response->withRedirect($router->urlFor('url.show', ['id' => $id]));
         }
 
         $htmlBody = !is_null($res) ? $res->getBody() : '';
@@ -231,7 +231,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
         echo $e->getMessage();
     }
 
-    return $response->withRedirect($router->urlFor('url', ['id' => $id]));
+    return $response->withRedirect($router->urlFor('url.show', ['id' => $id]));
 });
 
 $app->run();
