@@ -74,10 +74,8 @@ $app->get('/', function ($request, $response) {
 
 $app->get('/urls', function ($request, $response) {
     $pdo = $this->get('pdo');
-    $queryUrl = 'SELECT id, name FROM urls ORDER BY created_at DESC';
-    $stmt = $pdo->prepare($queryUrl);
-    $stmt->execute();
-    $selectedUrls = $stmt->fetchAll(\PDO::FETCH_UNIQUE);
+
+    $selectedUrls = $pdo->query('SELECT id, name FROM urls ORDER BY created_at DESC')->fetchAll(\PDO::FETCH_UNIQUE);
 
     $queryChecks = 'SELECT 
     url_id, 
