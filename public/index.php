@@ -178,7 +178,7 @@ $app->post('/urls', function ($request, $response) use ($router) {
 
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
     return $response->withRedirect($router->urlFor('url.show', ['id' => $lastInsertId]));
-});
+})->setName('urls.store');
 
 $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($router) {
     $id = $args['url_id'];
@@ -232,6 +232,6 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
     }
 
     return $response->withRedirect($router->urlFor('url.show', ['id' => $id]));
-});
+})->setName('urls.checks.store');
 
 $app->run();
