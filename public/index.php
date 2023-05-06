@@ -112,7 +112,6 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
     $stmt->execute([$id]);
     $selectUrl = $stmt->fetch();
 
-    if ($selectUrl) {
         $queryCheck = 'SELECT * FROM url_checks WHERE url_id = ? ORDER BY created_at DESC';
         $stmt = $pdo->prepare($queryCheck);
         $stmt->execute([$id]);
@@ -124,7 +123,7 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
             'checkData' => $selectedCheck,
         ];
         return $this->get('renderer')->render($response, 'url.phtml', $params);
-    }
+
 })->setName('url.show');
 
 $app->post('/urls', function ($request, $response) use ($router) {
@@ -140,7 +139,6 @@ $app->post('/urls', function ($request, $response) use ($router) {
         $params = [
         'url' => $formData['name'],
         'errors' => $errors,
-        'invalidForm' => 'is-invalid'
         ];
 
         $response = $response->withStatus(422);
