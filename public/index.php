@@ -110,9 +110,9 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
     $query = 'SELECT * FROM urls WHERE id = ?';
     $stmt = $pdo->prepare($query);
     $stmt->execute([$id]);
-    $select = $stmt->fetch();
+    $selectUrl = $stmt->fetch();
 
-    if ($select) {
+    if ($selectUrl) {
         $queryCheck = 'SELECT * FROM url_checks WHERE url_id = ? ORDER BY created_at DESC';
         $stmt = $pdo->prepare($queryCheck);
         $stmt->execute([$id]);
@@ -120,7 +120,7 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
 
         $params = [
             'flash' => $messages,
-            'data' => $select,
+            'data' => $selectUrl,
             'checkData' => $selectedCheck,
         ];
         return $this->get('renderer')->render($response, 'url.phtml', $params);
