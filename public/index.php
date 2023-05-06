@@ -123,7 +123,6 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
             'checkData' => $selectedCheck,
         ];
         return $this->get('renderer')->render($response, 'url.phtml', $params);
-
 })->setName('url.show');
 
 $app->post('/urls', function ($request, $response) use ($router) {
