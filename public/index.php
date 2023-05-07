@@ -208,6 +208,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
         }
 
             $htmlBody = $res->getBody();
+        /** @var Document $document */
             $document = new Document((string)$htmlBody);
             $statusCode = $res->getStatusCode();
             $h1 = optional($document->first('h1'))->text();
