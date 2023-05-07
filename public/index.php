@@ -203,14 +203,17 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
             return $response->withRedirect($router->urlFor('url.show', ['id' => $id]));
         }
 
-        $htmlBody = !is_null($res) ? $res->getBody() : '';
-        /** @var Document $document */
-        $document = !is_null($res) ? new Document((string) $htmlBody) : '';
-        $statusCode = !is_null($res) ? $res->getStatusCode() : null;
-        $h1 = !is_null($res) ? optional($document->first('h1'))->text() : '';
-        $title = !is_null($res) ? optional($document->first('title'))->text() : '';
-        $description = !is_null($res) ? optional($document->first('meta[name="description"]'))
-            ->getAttribute('content') : '';
+        if (is_null($res)) {
+            return $this->get('renderer')->render($response, "404.phtml");
+        }
+
+            $htmlBody = $res->getBody();
+            $document = new Document((string)$htmlBody);
+            $statusCode = $res->getStatusCode();
+            $h1 = optional($document->first('h1'))->text();
+            $title = optional($document->first('title'))->text();
+            $description = optional($document->first('meta[name="description"]'))
+                ->getAttribute('content');
 
         $sql = "INSERT INTO url_checks (
             url_id, 
