@@ -178,34 +178,34 @@ $app->post('/urls', function ($request, $response) use ($router) {
 $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($router) {
     $id = $args['url_id'];
 
+
+    $pdo = $this->get('pdo');
+
+    $queryUrl = 'SELECT name FROM urls WHERE id = ?';
+    $stmt = $pdo->prepare($queryUrl);
+    $stmt->execute([$id]);
+    $selectedUrl = $stmt->fetch(\PDO::FETCH_COLUMN);
+
+    $createdAt = Carbon::now();
+
+    $client = $this->get('client');
     try {
-        $pdo = $this->get('pdo');
-
-        $queryUrl = 'SELECT name FROM urls WHERE id = ?';
-        $stmt = $pdo->prepare($queryUrl);
-        $stmt->execute([$id]);
-        $selectedUrl = $stmt->fetch(\PDO::FETCH_COLUMN);
-
-        $createdAt = Carbon::now();
-
-        $client = $this->get('client');
-        try {
             $res = $client->get($selectedUrl);
             $this->get('flash')->addMessage('success', 'Страница успешно проверена');
-        } catch (RequestException $e) {
+    } catch (RequestException $e) {
             $res = $e->getResponse();
             $this->get('flash')->clearMessages();
             $errorMessage = 'Проверка была выполнена успешно, но сервер ответил c ошибкой';
             $this->get('flash')->addMessage('error', $errorMessage);
-        } catch (ConnectException $e) {
+    } catch (ConnectException $e) {
             $errorMessage = 'Произошла ошибка при проверке, не удалось подключиться';
             $this->get('flash')->addMessage('danger', $errorMessage);
             return $response->withRedirect($router->urlFor('url.show', ['id' => $id]));
-        }
+    }
 
-        if (is_null($res)) {
-            return $this->get('renderer')->render($response, "404.phtml");
-        }
+    if (is_null($res)) {
+            return $this->get('renderer')->render($response, "500.phtml");
+    }
 
             $htmlBody = $res->getBody();
         /** @var Document $document */
@@ -226,9 +226,6 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
             VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$id, $createdAt, $statusCode, $h1, $title, $description]);
-    } catch (\PDOException $e) {
-        echo $e->getMessage();
-    }
 
     return $response->withRedirect($router->urlFor('url.show', ['id' => $id]));
 })->setName('urls.checks.store');
