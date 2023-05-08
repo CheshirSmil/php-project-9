@@ -98,7 +98,7 @@ $app->get('/urls', function ($request, $response) {
     $params = [
         'data' => $selectedUrls
     ];
-    return $this->get('renderer')->render($response, 'urls.phtml', $params);
+    return $this->get('renderer')->render($response, 'urls/index.phtml', $params);
 })->setName('urls.index');
 
 $app->get('/urls/{id}', function ($request, $response, $args) {
@@ -122,7 +122,7 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
             'data' => $selectUrl,
             'checkData' => $selectedCheck,
         ];
-        return $this->get('renderer')->render($response, 'url.phtml', $params);
+        return $this->get('renderer')->render($response, 'urls/show.phtml', $params);
 })->setName('url.show');
 
 $app->post('/urls', function ($request, $response) use ($router) {
