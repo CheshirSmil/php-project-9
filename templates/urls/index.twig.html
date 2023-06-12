@@ -1,0 +1,27 @@
+{% extends 'layout.twig.html' %}
+
+{% block body %}
+<h1>Сайты</h1>
+<div class="table-responsive">
+    <table class="table table-bordered table-hover text-nowrap" data-test="urls">
+        <tbody>
+        <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Последняя проверка</th>
+            <th>Код ответа</th>
+        </tr>
+        {% for id, url in data %}
+        <tr>
+            <td>
+                {{ id }}
+            </td>
+            <td><a href="/urls/{{ id }}">{{ url['name'] }}</a></td>
+            <td>{{ url['created_at'] }}</td>
+            <td>{{ url['status_code'] }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
