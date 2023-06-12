@@ -12,12 +12,14 @@ use GuzzleHttp\Client;
 use DiDom\Document;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ConnectException;
+use Slim\Views\Twig;
+use Slim\Views\TwigMiddleware;
 
 session_start();
 
 $container = new Container();
-$container->set('renderer', function () {
-    return new \Slim\Views\PhpRenderer(__DIR__ . '/../templates');
+$container->set('view', function () {
+    return Twig::create(__DIR__ . '/../templates');
 });
 $container->set('flash', function () {
     return new \Slim\Flash\Messages();
@@ -59,6 +61,7 @@ AppFactory::setContainer($container);
 $app = AppFactory::create();
 $app->add(MethodOverrideMiddleware::class);
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
+$app->add(TwigMiddleware::createFromContainer($app));
 
 $customErrorHandler = function () use ($app) {
     $response = $app->getResponseFactory()->createResponse();
@@ -69,7 +72,7 @@ $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 $router = $app->getRouteCollector()->getRouteParser();
 
 $app->get('/', function ($request, $response) {
-    return $this->get('renderer')->render($response, "main.phtml");
+    return $this->get('view')->render($response, "main.twig.html");
 })->setName('main');
 
 $app->get('/urls', function ($request, $response) {
@@ -98,7 +101,7 @@ $app->get('/urls', function ($request, $response) {
     $params = [
         'data' => $selectedUrls
     ];
-    return $this->get('renderer')->render($response, 'urls/index.phtml', $params);
+    return $this->get('view')->render($response, 'urls/index.twig.html', $params);
 })->setName('urls.index');
 
 $app->get('/urls/{id}', function ($request, $response, $args) {
@@ -122,7 +125,7 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
             'data' => $selectUrl,
             'checkData' => $selectedCheck,
         ];
-        return $this->get('renderer')->render($response, 'urls/show.phtml', $params);
+        return $this->get('view')->render($response, 'urls/show.twig.html', $params);
 })->setName('url.show');
 
 $app->post('/urls', function ($request, $response) use ($router) {
@@ -140,8 +143,7 @@ $app->post('/urls', function ($request, $response) use ($router) {
         'errors' => $errors,
         ];
 
-        $response = $response->withStatus(422);
-        return $this->get('renderer')->render($response, 'main.phtml', $params);
+        return $this->get('view')->render($response->withStatus(422), 'main.twig.html', $params);
     }
 
     $pdo = $this->get('pdo');
