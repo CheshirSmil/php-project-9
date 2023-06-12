@@ -88,8 +88,7 @@ $app->get('/urls', function ($request, $response) {
     title, 
     description 
     FROM url_checks';
-    $stmt = $pdo->prepare($queryChecks);
-    $stmt->execute();
+    $stmt = $pdo->query($queryChecks);
     $selectedChecks = $stmt->fetchAll(\PDO::FETCH_UNIQUE);
 
     foreach ($selectedChecks as $key => $value) {
@@ -180,11 +179,8 @@ $app->post('/urls', function ($request, $response) use ($router) {
 $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($router) {
     $id = $args['url_id'];
 
-
-    $pdo = $this->get('pdo');
-
     $queryUrl = 'SELECT name FROM urls WHERE id = ?';
-    $stmt = $pdo->prepare($queryUrl);
+    $stmt = $this->get('pdo')->prepare($queryUrl);
     $stmt->execute([$id]);
     $selectedUrl = $stmt->fetch(\PDO::FETCH_COLUMN);
 
@@ -226,7 +222,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
             title, 
             description) 
             VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $pdo->prepare($sql);
+        $stmt = $this->get('pdo')->prepare($sql);
         $stmt->execute([$id, $createdAt, $statusCode, $h1, $title, $description]);
 
     return $response->withRedirect($router->urlFor('url.show', ['id' => $id]));
