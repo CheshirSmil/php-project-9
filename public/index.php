@@ -153,15 +153,15 @@ $app->post('/urls', function ($request, $response) use ($router) {
     $createdAt = Carbon::now();
 
     $queryUrl = 'SELECT name FROM urls WHERE name = ?';
-    $stmt = $pdo->prepare($queryUrl);
-    $stmt->execute([$urlName]);
-    $selectedUrl = $stmt->fetchAll();
+    $stmtForUrl = $pdo->prepare($queryUrl);
+    $stmtForUrl->execute([$urlName]);
+    $selectedUrl = $stmtForUrl->fetchAll();
 
     if (count($selectedUrl) > 0) {
         $queryId = 'SELECT id FROM urls WHERE name = ?';
-        $stmt = $pdo->prepare($queryId);
-        $stmt->execute([$urlName]);
-        $selectId = (string) $stmt->fetchColumn();
+        $stmtForCheck = $pdo->prepare($queryId);
+        $stmtForCheck->execute([$urlName]);
+        $selectId = (string) $stmtForCheck->fetchColumn();
 
         $this->get('flash')->addMessage('success', 'Страница уже существует');
         return $response->withRedirect($router->urlFor('url.show', ['id' => $selectId]));
