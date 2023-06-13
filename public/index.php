@@ -65,7 +65,7 @@ $app->add(TwigMiddleware::createFromContainer($app));
 
 $customErrorHandler = function () use ($app) {
     $response = $app->getResponseFactory()->createResponse();
-    return $this->get('renderer')->render($response, "404.phtml");
+    return $this->get('view')->render($response, "404.twig.html");
 };
 $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 
@@ -202,7 +202,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
     }
 
     if (is_null($res)) {
-            return $this->get('renderer')->render($response, "500.phtml");
+            return $this->get('view')->render($response, "500.twig.html");
     }
 
             $htmlBody = $res->getBody();

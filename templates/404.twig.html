@@ -1,0 +1,21 @@
+{% extends 'layout.twig.html' %}
+
+{% block body %}
+<h1>Страница не найдена!</h1>
+<div class="row row-cols-1 row-cols-lg-1 align-items-lg-center">
+    <div class="col">
+        <img class="img-fluid" alt="404 error" src="/errors/404.svg" loading="lazy">
+    </div>
+        <div class="col">
+            <h2 class="h2 mb-4">
+                Ошибка 404
+            </h2>
+            <p class="fs-5 text-black mb-3">Что это означает?</p>
+            <p class="mb-4">Вы попали на страницу, которой не существует</p>
+            <p class="fs-5 text-black mb-3">Почему это произошло?</p>
+            <p class="mb-4">Запрошенная страница устарела, удалена или был введен не верный адрес в адресной строке</p>
+            <p class="fs-5 text-black mb-3">Как исправить?</p>
+            <p class="mb-2">Мы не знаем откуда Вы попали на эту страницу, поэтому рекомендуем начать <a href="{{ url_for('main') }}">с Главной</a></p>
+        </div>
+</div>
+{% endblock %}
