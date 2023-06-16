@@ -31,19 +31,19 @@
 
 {% if flash['success'] %}
 <div class="alert alert-success" role="alert">
-    {{ flash['success'][0] }}
+    {{ flash['success']|first }}
 </div>
 {% endif %}
 
 {% if flash['error'] %}
 <div class="alert alert-warning" role="alert">
-    {{ flash['error'][0] }}
+    {{ flash['error']|first }}
 </div>
 {% endif %}
 
 {% if flash['danger'] %}
 <div class="alert alert-danger" role="alert">
-    {{ flash['danger'][0] }}
+    {{ flash['danger']|first }}
 </div>
 {% endif %}
 

@@ -10,7 +10,7 @@
             <input type="text" placeholder="https://www.example.com" name="url[name]" value="{{ url ?? '' }}"
                    class="form-control form-control-lg {{ invalidForm ?? '' }}">
             {% if errors['name'] %}
-            <div class="invalid-feedback d-block">{{ errors['name'][0] }}</div>
+            <div class="invalid-feedback d-block">{{ errors['name']|first }}</div>
             {% endif %}
         </div>
         <div class="col-2">
