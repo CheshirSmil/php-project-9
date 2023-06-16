@@ -16,7 +16,7 @@
             <td>
                 {{ id }}
             </td>
-            <td><a href="/urls/{{ id }}">{{ url['name'] }}</a></td>
+            <td><a href="{{ url_for('url.show', {id}) }}">{{ url['name'] }}</a></td>
             <td>{{ url['created_at'] }}</td>
             <td>{{ url['status_code'] }}</td>
         </tr>
