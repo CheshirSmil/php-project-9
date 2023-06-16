@@ -140,6 +140,7 @@ $app->post('/urls', function ($request, $response) use ($router) {
         $params = [
         'url' => $formData['name'],
         'errors' => $errors,
+        'invalidForm'=> 'is-invalid'
         ];
 
         return $this->get('view')->render($response->withStatus(422), 'main.twig.html', $params);
