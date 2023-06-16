@@ -19,10 +19,10 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{ url_for('main') }}">Главная</a>
+                    <a href="{{ url_for('main') }}" class="nav-link {% if is_current_url('main') %} active {% endif %}">Главная</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('urls.index') }}">Сайты</a>
+                    <a href="{{ url_for('urls.index') }}" class="nav-link {% if is_current_url('urls.index') %} active {% endif %}">Сайты</a>
                 </li>
             </ul>
         </div>
