@@ -60,11 +60,11 @@ $app->add(MethodOverrideMiddleware::class);
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $app->add(TwigMiddleware::createFromContainer($app));
 
-$customErrorHandler = function () use ($app) {
+/**$customErrorHandler = function () use ($app) {
     $response = $app->getResponseFactory()->createResponse();
     return $this->get('view')->render($response, "404.twig.html");
 };
-$errorMiddleware->setDefaultErrorHandler($customErrorHandler);
+$errorMiddleware->setDefaultErrorHandler($customErrorHandler);*/
 
 $router = $app->getRouteCollector()->getRouteParser();
 
@@ -110,6 +110,10 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
     $stmt = $pdo->prepare($query);
     $stmt->execute([$id]);
     $selectedUrl = $stmt->fetch();
+
+    if (empty($selectedUrl)) {
+        return $this->get('view')->render($response, "404.twig.html");
+    }
 
         $queryCheck = 'SELECT * FROM url_checks WHERE url_id = ? ORDER BY created_at DESC';
         $stmt = $pdo->prepare($queryCheck);
