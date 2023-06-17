@@ -29,9 +29,7 @@ $container->set('pdo', function () {
     $dotenv->safeLoad();
 
     $databaseUrl = parse_url($_ENV['DATABASE_URL']);
-    if (!$databaseUrl) {
-        throw new \Exception("Error reading database configuration file");
-    }
+
     $dbHost = $databaseUrl['host'];
     $dbPort = $databaseUrl['port'];
     $dbName = ltrim($databaseUrl['path'], '/');
@@ -57,8 +55,7 @@ $container->set('client', function () {
     return new Client();
 });
 
-AppFactory::setContainer($container);
-$app = AppFactory::create();
+$app = AppFactory::createFromContainer($container);
 $app->add(MethodOverrideMiddleware::class);
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $app->add(TwigMiddleware::createFromContainer($app));
