@@ -111,7 +111,7 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
         return $this->get('view')->render($response, "404.twig.html");
     }
 
-        $queryCheck = 'SELECT * FROM url_checks WHERE url_id = ? ORDER BY created_at DESC';
+        $queryCheck = 'SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC';
         $stmt = $pdo->prepare($queryCheck);
         $stmt->execute([$id]);
         $selectedCheck = $stmt->fetchAll();
