@@ -51,20 +51,16 @@ $container->set('pdo', function () {
 
     return $pdo;
 });
+
 $container->set('client', function () {
     return new Client();
 });
+$container->get('view')->getEnvironment()->addGlobal('flash', $container->get('flash')->getMessages());
 
 $app = AppFactory::createFromContainer($container);
 $app->add(MethodOverrideMiddleware::class);
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $app->add(TwigMiddleware::createFromContainer($app));
-
-/**$customErrorHandler = function () use ($app) {
-    $response = $app->getResponseFactory()->createResponse();
-    return $this->get('view')->render($response, "404.twig.html");
-};
-$errorMiddleware->setDefaultErrorHandler($customErrorHandler);*/
 
 $router = $app->getRouteCollector()->getRouteParser();
 
@@ -121,7 +117,6 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
         $selectedCheck = $stmt->fetchAll();
 
         $params = [
-            'flash' => $messages,
             'data' => $selectedUrl,
             'checkData' => $selectedCheck,
         ];
