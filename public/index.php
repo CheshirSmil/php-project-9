@@ -50,7 +50,6 @@ $container->set('pdo', function () {
     $pdo = new \PDO($conStr);
     $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
-
     return $pdo;
 });
 
@@ -58,12 +57,10 @@ $container->set('client', function () {
     return new Client();
 });
 $container->get('view')->getEnvironment()->addGlobal('flash', $container->get('flash')->getMessages());
-
 $app = AppFactory::createFromContainer($container);
 $app->add(MethodOverrideMiddleware::class);
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $app->add(TwigMiddleware::createFromContainer($app));
-
 $router = $app->getRouteCollector()->getRouteParser();
 
 $app->get('/', function ($request, $response) {
@@ -99,8 +96,6 @@ $app->get('/urls', function ($request, $response) {
 })->setName('urls.index');
 
 $app->get('/urls/{id}', function ($request, $response, $args) {
-    $messages = $this->get('flash')->getMessages();
-
     $id = $args['id'];
 
     $pdo = $this->get('pdo');
@@ -127,7 +122,6 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
 
 $app->post('/urls', function ($request, $response) use ($router) {
     $formData = $request->getParsedBody()['url'];
-
     $validator = new Validator($formData);
     $validator->rule('required', 'name')->message('URL не должен быть пустым');
     $validator->rule('lengthMax', 'name', 255)->message('Некорректный URL');
@@ -140,30 +134,22 @@ $app->post('/urls', function ($request, $response) use ($router) {
         'errors' => $errors,
         'invalidForm' => 'is-invalid'
         ];
-
         return $this->get('view')->render($response->withStatus(422), 'main.twig.html', $params);
     }
 
     $pdo = $this->get('pdo');
-
     $url = strtolower($formData['name']);
     $parsedUrl = parse_url($url);
     $urlName = "{$parsedUrl['scheme']}://{$parsedUrl['host']}";
     $createdAt = Carbon::now();
 
-    $queryUrl = 'SELECT name FROM urls WHERE name = ?';
-    $stmtForUrl = $pdo->prepare($queryUrl);
-    $stmtForUrl->execute([$urlName]);
-    $selectedUrl = $stmtForUrl->fetchAll();
-
-    if (count($selectedUrl) > 0) {
-        $queryId = 'SELECT id FROM urls WHERE name = ?';
-        $stmtForCheck = $pdo->prepare($queryId);
-        $stmtForCheck->execute([$urlName]);
-        $selectId = (string) $stmtForCheck->fetchColumn();
-
+    $queryId = 'SELECT id FROM urls WHERE name = ?';
+    $stmtForId = $pdo->prepare($queryId);
+    $stmtForId->execute([$urlName]);
+    $selectedId = (string) $stmtForId->fetchColumn();
+    if ($selectedId) {
         $this->get('flash')->addMessage('success', 'Страница уже существует');
-        return $response->withRedirect($router->urlFor('url.show', ['id' => $selectId]));
+        return $response->withRedirect($router->urlFor('url.show', ['id' => $selectedId]));
     }
 
     $sql = "INSERT INTO urls (name, created_at) VALUES (?, ?)";
@@ -204,26 +190,25 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
             return $this->get('view')->render($response, "500.twig.html");
     }
 
-            $htmlBody = $res->getBody();
-        /** @var Document $document */
-            $document = new Document((string)$htmlBody);
-            $statusCode = $res->getStatusCode();
-            $h1 = optional($document->first('h1'))->text();
-            $title = optional($document->first('title'))->text();
-            $description = optional($document->first('meta[name="description"]'))
-                ->getAttribute('content');
+    $htmlBody = $res->getBody();
+    /** @var Document $document */
+    $document = new Document((string)$htmlBody);
+    $statusCode = $res->getStatusCode();
+    $h1 = optional($document->first('h1'))->text();
+    $title = optional($document->first('title'))->text();
+    $description = optional($document->first('meta[name="description"]'))
+        ->getAttribute('content');
 
-        $sql = "INSERT INTO url_checks (
-            url_id, 
-            created_at, 
-            status_code, 
-            h1, 
-            title, 
-            description) 
-            VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $this->get('pdo')->prepare($sql);
-        $stmt->execute([$id, $createdAt, $statusCode, $h1, $title, $description]);
-
+    $sql = "INSERT INTO url_checks (
+        url_id, 
+        created_at, 
+        status_code, 
+        h1, 
+        title, 
+        description) 
+        VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = $this->get('pdo')->prepare($sql);
+    $stmt->execute([$id, $createdAt, $statusCode, $h1, $title, $description]);
     return $response->withRedirect($router->urlFor('url.show', ['id' => $id]));
 })->setName('urls.checks.store');
 
