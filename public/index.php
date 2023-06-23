@@ -29,12 +29,14 @@ $container->set('pdo', function () {
     $dotenv->safeLoad();
 
     $databaseUrl = parse_url($_ENV['DATABASE_URL']);
-
-    $dbHost = $databaseUrl['host'];
-    $dbPort = $databaseUrl['port'];
-    $dbName = ltrim($databaseUrl['path'], '/');
-    $dbUser = $databaseUrl['user'];
-    $dbPassword = $databaseUrl['pass'];
+    if (!$databaseUrl) {
+        throw new \Exception("Не удалось получить переменную среды DATABASE_URL");
+    }
+    $dbHost = $databaseUrl['host'] ?? '';
+    $dbPort = $databaseUrl['port'] ?? '';
+    $dbName = ltrim($databaseUrl['path'] ?? '', '/');
+    $dbUser = $databaseUrl['user'] ?? '';
+    $dbPassword = $databaseUrl['pass'] ?? '';
 
     $conStr = sprintf(
         "pgsql:host=%s;port=%d;dbname=%s;user=%s;password=%s",
