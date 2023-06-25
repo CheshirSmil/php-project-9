@@ -98,15 +98,18 @@ $app->get('/urls', function ($request, $response) {
 $app->get('/urls/{id}', function ($request, $response, $args) {
     $id = $args['id'];
 
-    $pdo = $this->get('pdo');
-    $query = 'SELECT * FROM urls WHERE id = ?';
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([$id]);
-    $selectedUrl = $stmt->fetch();
-
-    if (empty($selectedUrl)) {
+    if (!is_numeric($id)) {
         return $this->get('view')->render($response, "404.twig.html");
-    }
+    } else {
+        $pdo = $this->get('pdo');
+        $query = 'SELECT * FROM urls WHERE id = ?';
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([$id]);
+        $selectedUrl = $stmt->fetch();
+
+        if (empty($selectedUrl)) {
+            return $this->get('view')->render($response, "404.twig.html");
+        }
 
         $queryCheck = 'SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC';
         $stmt = $pdo->prepare($queryCheck);
@@ -118,6 +121,7 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
             'checkData' => $selectedCheck,
         ];
         return $this->get('view')->render($response, 'urls/show.twig.html', $params);
+    }
 })->setName('url.show');
 
 $app->post('/urls', function ($request, $response) use ($router) {
