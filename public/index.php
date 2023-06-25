@@ -190,10 +190,6 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
             return $response->withRedirect($router->urlFor('url.show', ['id' => $id]));
     }
 
-    if (is_null($res)) {
-            return $this->get('view')->render($response, "500.twig.html");
-    }
-
     $htmlBody = $res->getBody();
     /** @var Document $document */
     $document = new Document((string)$htmlBody);
