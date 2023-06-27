@@ -18,8 +18,10 @@ use Slim\Views\TwigMiddleware;
 session_start();
 
 $container = new Container();
-$container->set('view', function () {
-    return Twig::create(__DIR__ . '/../templates');
+$container->set('view', function ($container) {
+    $twig = Twig::create(__DIR__ . '/../templates');
+    $twig->getEnvironment()->addGlobal('flash', $container->get('flash')->getMessages());
+    return $twig;
 });
 $container->set('flash', function () {
     return new \Slim\Flash\Messages();
@@ -56,7 +58,7 @@ $container->set('pdo', function () {
 $container->set('client', function () {
     return new Client();
 });
-$container->get('view')->getEnvironment()->addGlobal('flash', $container->get('flash')->getMessages());
+//$container->get('view')->getEnvironment()->addGlobal('flash', $container->get('flash')->getMessages());
 $app = AppFactory::createFromContainer($container);
 $app->add(MethodOverrideMiddleware::class);
 $app->add(TwigMiddleware::createFromContainer($app));
