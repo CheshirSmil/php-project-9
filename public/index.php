@@ -59,7 +59,6 @@ $container->set('client', function () {
 $container->get('view')->getEnvironment()->addGlobal('flash', $container->get('flash')->getMessages());
 $app = AppFactory::createFromContainer($container);
 $app->add(MethodOverrideMiddleware::class);
-$errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $app->add(TwigMiddleware::createFromContainer($app));
 $router = $app->getRouteCollector()->getRouteParser();
 
@@ -134,15 +133,15 @@ $app->post('/urls', function ($request, $response) use ($router) {
     if (!$validator->validate()) {
         $errors = $validator->errors();
         $params = [
-        'url' => $formData['name'],
-        'errors' => $errors,
-        'invalidForm' => 'is-invalid'
+            'url' => $formData['name'],
+            'errors' => $errors,
+            'invalidForm' => 'is-invalid'
         ];
         return $this->get('view')->render($response->withStatus(422), 'main.twig.html', $params);
     }
 
     $pdo = $this->get('pdo');
-    $url = strtolower($formData['name']);
+    $url = mb_strtolower($formData['name']);
     $parsedUrl = parse_url($url);
     $urlName = "{$parsedUrl['scheme']}://{$parsedUrl['host']}";
     $createdAt = Carbon::now();
