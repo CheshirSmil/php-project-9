@@ -58,7 +58,7 @@ $container->set('pdo', function () {
 $container->set('client', function () {
     return new Client();
 });
-//$container->get('view')->getEnvironment()->addGlobal('flash', $container->get('flash')->getMessages());
+
 $app = AppFactory::createFromContainer($container);
 $app->add(MethodOverrideMiddleware::class);
 $app->add(TwigMiddleware::createFromContainer($app));
