@@ -60,6 +60,7 @@ $container->set('client', function () {
 });
 
 $app = AppFactory::createFromContainer($container);
+$app->addErrorMiddleware(true, true, true);
 $app->add(MethodOverrideMiddleware::class);
 $app->add(TwigMiddleware::createFromContainer($app));
 $router = $app->getRouteCollector()->getRouteParser();
@@ -96,21 +97,18 @@ $app->get('/urls', function ($request, $response) {
     return $this->get('view')->render($response, 'urls/index.twig.html', $params);
 })->setName('urls.index');
 
-$app->get('/urls/{id}', function ($request, $response, $args) {
+$app->get('/urls/{id:\d+}', function ($request, $response, $args) {
     $id = $args['id'];
 
-    if (!is_numeric($id)) {
-        return $this->get('view')->render($response, "404.twig.html");
-    } else {
         $pdo = $this->get('pdo');
         $query = 'SELECT * FROM urls WHERE id = ?';
         $stmt = $pdo->prepare($query);
         $stmt->execute([$id]);
         $selectedUrl = $stmt->fetch();
 
-        if (empty($selectedUrl)) {
+    if (empty($selectedUrl)) {
             return $this->get('view')->render($response, "404.twig.html");
-        }
+    }
 
         $queryCheck = 'SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC';
         $stmt = $pdo->prepare($queryCheck);
@@ -122,7 +120,6 @@ $app->get('/urls/{id}', function ($request, $response, $args) {
             'checkData' => $selectedCheck,
         ];
         return $this->get('view')->render($response, 'urls/show.twig.html', $params);
-    }
 })->setName('url.show');
 
 $app->post('/urls', function ($request, $response) use ($router) {
@@ -166,7 +163,7 @@ $app->post('/urls', function ($request, $response) use ($router) {
     return $response->withRedirect($router->urlFor('url.show', ['id' => $lastInsertId]));
 })->setName('urls.store');
 
-$app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($router) {
+$app->post('/urls/{url_id:\d+}/checks', function ($request, $response, $args) use ($router) {
     $id = $args['url_id'];
 
     $queryUrl = 'SELECT name FROM urls WHERE id = ?';
