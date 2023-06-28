@@ -14,6 +14,10 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ConnectException;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
+use Slim\Exception\HttpNotFoundException;
+use Slim\Psr7\Response;
+use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 session_start();
 
@@ -60,6 +64,16 @@ $container->set('client', function () {
 });
 
 $app = AppFactory::createFromContainer($container);
+
+$app->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($container) {
+    try {
+        return $handler->handle($request);
+    } catch (HttpNotFoundException) {
+        $response = (new Response())->withStatus(404);
+        return $container->get('view')->render($response, '404.twig.html');
+    }
+});
+
 $app->addErrorMiddleware(true, true, true);
 $app->add(MethodOverrideMiddleware::class);
 $app->add(TwigMiddleware::createFromContainer($app));
@@ -114,6 +128,10 @@ $app->get('/urls/{id:\d+}', function ($request, $response, $args) {
         $stmt = $pdo->prepare($queryCheck);
         $stmt->execute([$id]);
         $selectedCheck = $stmt->fetchAll();
+
+    if (is_null($selectedCheck)) {
+        throw new HttpNotFoundException($request);
+    }
 
         $params = [
             'data' => $selectedUrl,
