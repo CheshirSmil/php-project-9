@@ -106,7 +106,7 @@ $app->get('/urls', function ($request, $response) {
     }
 
     $params = [
-        'data' => $selectedUrls
+        'selectedUrls' => $selectedUrls
     ];
     return $this->get('view')->render($response, 'urls/index.twig.html', $params);
 })->setName('urls.index');
@@ -127,15 +127,15 @@ $app->get('/urls/{id:\d+}', function ($request, $response, $args) {
         $queryCheck = 'SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC';
         $stmt = $pdo->prepare($queryCheck);
         $stmt->execute([$id]);
-        $selectedCheck = $stmt->fetchAll();
+        $urlChecks = $stmt->fetchAll();
 
-    if (is_null($selectedCheck)) {
+    if (is_null($urlChecks)) {
         throw new HttpNotFoundException($request);
     }
 
         $params = [
             'data' => $selectedUrl,
-            'checkData' => $selectedCheck,
+            'urlChecks' => $urlChecks,
         ];
         return $this->get('view')->render($response, 'urls/show.twig.html', $params);
 })->setName('url.show');
