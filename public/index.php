@@ -111,7 +111,7 @@ $app->get('/urls', function ($request, $response) {
     return $this->get('view')->render($response, 'urls/index.twig.html', $params);
 })->setName('urls.index');
 
-$app->get('/urls/{id:\d+}',function ($request, $response, $args) {
+$app->get('/urls/{id:\d+}', function ($request, $response, $args) {
     $id = $args['id'];
 
     $pdo = $this->get('pdo');
@@ -141,7 +141,7 @@ $app->get('/urls/{id:\d+}',function ($request, $response, $args) {
 })->setName('url.show');
 
 $app->post('/urls', function ($request, $response) use ($router) {
-    $url= $request->getParsedBody()['url'];
+    $url = $request->getParsedBody()['url'];
     $validator = new Validator($url);
     $validator->rule('required', 'name')->message('URL не должен быть пустым');
     $validator->rule('lengthMax', 'name', 255)->message('Некорректный URL');
