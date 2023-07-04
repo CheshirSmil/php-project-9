@@ -111,38 +111,38 @@ $app->get('/urls', function ($request, $response) {
     return $this->get('view')->render($response, 'urls/index.twig.html', $params);
 })->setName('urls.index');
 
-$app->get('/urls/{id:\d+}', function ($request, $response, $args) {
+$app->get('/urls/{id:\d+}',function ($request, $response, $args) {
     $id = $args['id'];
 
-        $pdo = $this->get('pdo');
-        $query = 'SELECT * FROM urls WHERE id = ?';
-        $stmt = $pdo->prepare($query);
-        $stmt->execute([$id]);
-        $selectedUrl = $stmt->fetch();
+    $pdo = $this->get('pdo');
+    $query = 'SELECT * FROM urls WHERE id = ?';
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$id]);
+    $selectedUrl = $stmt->fetch();
 
     if (empty($selectedUrl)) {
-            return $this->get('view')->render($response, "404.twig.html");
+        return $this->get('view')->render($response, "404.twig.html");
     }
 
-        $queryCheck = 'SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC';
-        $stmt = $pdo->prepare($queryCheck);
-        $stmt->execute([$id]);
-        $urlChecks = $stmt->fetchAll();
+    $queryCheck = 'SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC';
+    $stmt = $pdo->prepare($queryCheck);
+    $stmt->execute([$id]);
+    $urlChecks = $stmt->fetchAll();
 
     if (is_null($urlChecks)) {
         throw new HttpNotFoundException($request);
     }
 
-        $params = [
-            'data' => $selectedUrl,
-            'urlChecks' => $urlChecks,
-        ];
-        return $this->get('view')->render($response, 'urls/show.twig.html', $params);
+    $params = [
+        'selectedUrl' => $selectedUrl,
+        'urlChecks' => $urlChecks,
+    ];
+    return $this->get('view')->render($response, 'urls/show.twig.html', $params);
 })->setName('url.show');
 
 $app->post('/urls', function ($request, $response) use ($router) {
-    $formData = $request->getParsedBody()['url'];
-    $validator = new Validator($formData);
+    $url= $request->getParsedBody()['url'];
+    $validator = new Validator($url);
     $validator->rule('required', 'name')->message('URL не должен быть пустым');
     $validator->rule('lengthMax', 'name', 255)->message('Некорректный URL');
     $validator->rule('url', 'name')->message('Некорректный URL');
@@ -150,14 +150,14 @@ $app->post('/urls', function ($request, $response) use ($router) {
     if (!$validator->validate()) {
         $errors = $validator->errors();
         $params = [
-            'url' => $formData['name'],
-            'errors' => $errors,
+            'url' => $url['name'],
+            'errors' => $errors
         ];
         return $this->get('view')->render($response->withStatus(422), 'main.twig.html', $params);
     }
 
     $pdo = $this->get('pdo');
-    $url = mb_strtolower($formData['name']);
+    $url = mb_strtolower($url['name']);
     $parsedUrl = parse_url($url);
     $urlName = "{$parsedUrl['scheme']}://{$parsedUrl['host']}";
     $createdAt = Carbon::now();

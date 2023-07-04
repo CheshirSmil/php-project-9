@@ -1,27 +1,27 @@
 {% extends 'layout.twig.html' %}
 
 {% block body %}
-<h1>Сайт: {{ data['name'] }}</h1>
+<h1>Сайт: {{ selectedUrl['name'] }}</h1>
 <div class="table-responsive">
     <table data-test="url" class="table table-bordered table-hover text-nowrap" data-test="url">
         <tbody>
         <tr>
             <td>ID</td>
-            <td>{{ data['id'] }}</td>
+            <td>{{ selectedUrl['id'] }}</td>
         </tr>
         <tr>
             <td>Имя</td>
-            <td>{{ data['name'] }}</td>
+            <td>{{ selectedUrl['name'] }}</td>
         </tr>
         <tr>
             <td>Дата создания</td>
-            <td>{{ data['created_at'] }}</td>
+            <td>{{ selectedUrl['created_at'] }}</td>
         </tr>
         </tbody>
     </table>
 </div>
 <h2 class="mt-5 mb-3">Проверки</h2>
-<form method="post" action="{{ url_for('urls.checks.store', {'url_id' : data['id']}) }}">
+<form method="post" action="{{ url_for('urls.checks.store', {'url_id' : selectedUrl['id']}) }}">
     <input type="submit" class="btn btn-primary" value="Запустить проверку">
 </form>
 <table class="table table-bordered table-hover mt-3" data-test="checks">
