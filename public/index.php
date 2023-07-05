@@ -165,7 +165,7 @@ $app->post('/urls', function ($request, $response) use ($router) {
     $queryId = 'SELECT id FROM urls WHERE name = ?';
     $stmtForId = $pdo->prepare($queryId);
     $stmtForId->execute([$urlName]);
-    $selectedId = (string) $stmtForId->fetchColumn();
+    $selectedId = (string)$stmtForId->fetchColumn();
     if ($selectedId) {
         $this->get('flash')->addMessage('success', 'Страница уже существует');
         return $response->withRedirect($router->urlFor('url.show', ['id' => $selectedId]));
@@ -174,7 +174,7 @@ $app->post('/urls', function ($request, $response) use ($router) {
     $sql = "INSERT INTO urls (name, created_at) VALUES (?, ?)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$urlName, $createdAt]);
-    $lastInsertId = (string) $pdo->lastInsertId();
+    $lastInsertId = (string)$pdo->lastInsertId();
 
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
     return $response->withRedirect($router->urlFor('url.show', ['id' => $lastInsertId]));
@@ -192,17 +192,17 @@ $app->post('/urls/{url_id:\d+}/checks', function ($request, $response, $args) us
 
     $client = $this->get('client');
     try {
-            $res = $client->get($selectedUrl);
-            $this->get('flash')->addMessage('success', 'Страница успешно проверена');
+        $res = $client->get($selectedUrl);
+        $this->get('flash')->addMessage('success', 'Страница успешно проверена');
     } catch (RequestException $e) {
-            $res = $e->getResponse();
-            $this->get('flash')->clearMessages();
-            $errorMessage = 'Проверка была выполнена успешно, но сервер ответил c ошибкой';
-            $this->get('flash')->addMessage('error', $errorMessage);
+        $res = $e->getResponse();
+        $this->get('flash')->clearMessages();
+        $errorMessage = 'Проверка была выполнена успешно, но сервер ответил c ошибкой';
+        $this->get('flash')->addMessage('error', $errorMessage);
     } catch (ConnectException $e) {
-            $errorMessage = 'Произошла ошибка при проверке, не удалось подключиться';
-            $this->get('flash')->addMessage('danger', $errorMessage);
-            return $response->withRedirect($router->urlFor('url.show', ['id' => $id]));
+        $errorMessage = 'Произошла ошибка при проверке, не удалось подключиться';
+        $this->get('flash')->addMessage('danger', $errorMessage);
+        return $response->withRedirect($router->urlFor('url.show', ['id' => $id]));
     }
 
     $htmlBody = $res->getBody();
