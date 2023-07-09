@@ -121,7 +121,7 @@ $app->get('/urls/{id:\d+}', function ($request, $response, $args) {
     $selectedUrl = $stmt->fetch();
 
     if (empty($selectedUrl)) {
-        throw new HttpNotFoundException($request);;
+        throw new HttpNotFoundException($request);
     }
 
     $queryCheck = 'SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC';
