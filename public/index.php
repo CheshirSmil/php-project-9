@@ -86,7 +86,7 @@ $app->get('/', function ($request, $response) {
 $app->get('/urls', function ($request, $response) {
     $pdo = $this->get('pdo');
 
-    $selectedUrls = $pdo->query('SELECT id, name FROM urls ORDER BY created_at DESC')->fetchAll(\PDO::FETCH_UNIQUE);
+    $urls = $pdo->query('SELECT id, name FROM urls ORDER BY created_at DESC')->fetchAll(\PDO::FETCH_UNIQUE);
 
     $queryChecks = 'SELECT 
     url_id, 
@@ -97,16 +97,16 @@ $app->get('/urls', function ($request, $response) {
     description 
     FROM url_checks';
     $stmt = $pdo->query($queryChecks);
-    $selectedChecks = $stmt->fetchAll(\PDO::FETCH_UNIQUE);
+    $checks = $stmt->fetchAll(\PDO::FETCH_UNIQUE);
 
-    foreach ($selectedChecks as $key => $value) {
-        if (array_key_exists($key, $selectedUrls)) {
-            $selectedUrls[$key] = array_merge($selectedUrls[$key], $value);
+    foreach ($checks as $key => $value) {
+        if (array_key_exists($key, $urls)) {
+            $urls[$key] = array_merge($urls[$key], $value);
         }
     }
 
     $params = [
-        'selectedUrls' => $selectedUrls
+        'urls' => $urls
     ];
     return $this->get('view')->render($response, 'urls/index.twig.html', $params);
 })->setName('urls.index');
@@ -162,10 +162,10 @@ $app->post('/urls', function ($request, $response) use ($router) {
     $urlName = "{$parsedUrl['scheme']}://{$parsedUrl['host']}";
     $createdAt = Carbon::now();
 
-    $queryId = 'SELECT id FROM urls WHERE name = ?';
-    $stmtForId = $pdo->prepare($queryId);
-    $stmtForId->execute([$urlName]);
-    $selectedId = (string)$stmtForId->fetchColumn();
+    $sql = 'SELECT id FROM urls WHERE name = ?';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$urlName]);
+    $selectedId = (string)$stmt->fetchColumn();
     if ($selectedId) {
         $this->get('flash')->addMessage('success', 'Страница уже существует');
         return $response->withRedirect($router->urlFor('url.show', ['id' => $selectedId]));
@@ -183,8 +183,8 @@ $app->post('/urls', function ($request, $response) use ($router) {
 $app->post('/urls/{url_id:\d+}/checks', function ($request, $response, $args) use ($router) {
     $id = $args['url_id'];
 
-    $queryUrl = 'SELECT name FROM urls WHERE id = ?';
-    $stmt = $this->get('pdo')->prepare($queryUrl);
+    $sql = 'SELECT name FROM urls WHERE id = ?';
+    $stmt = $this->get('pdo')->prepare($sql);
     $stmt->execute([$id]);
     $selectedUrl = $stmt->fetch(\PDO::FETCH_COLUMN);
 
