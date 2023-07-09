@@ -121,7 +121,7 @@ $app->get('/urls/{id:\d+}', function ($request, $response, $args) {
     $selectedUrl = $stmt->fetch();
 
     if (empty($selectedUrl)) {
-        return $this->get('view')->render($response, "404.twig.html");
+        throw new HttpNotFoundException($request);;
     }
 
     $queryCheck = 'SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC';
@@ -129,7 +129,7 @@ $app->get('/urls/{id:\d+}', function ($request, $response, $args) {
     $stmt->execute([$id]);
     $urlChecks = $stmt->fetchAll();
 
-    if (is_null($urlChecks)) {
+    if ($urlChecks === false) {
         throw new HttpNotFoundException($request);
     }
 
