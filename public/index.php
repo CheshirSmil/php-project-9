@@ -129,10 +129,6 @@ $app->get('/urls/{id:\d+}', function ($request, $response, $args) {
     $stmt->execute([$id]);
     $urlChecks = $stmt->fetchAll();
 
-    if ($urlChecks === false) {
-        throw new HttpNotFoundException($request);
-    }
-
     $params = [
         'selectedUrl' => $selectedUrl,
         'urlChecks' => $urlChecks,
