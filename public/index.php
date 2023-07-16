@@ -14,6 +14,8 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ConnectException;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
+use Slim\Exception\HttpNotFoundException;
+use Psr\Http\Message\ServerRequestInterface;
 
 session_start();
 
@@ -65,9 +67,15 @@ $app->add(MethodOverrideMiddleware::class);
 $app->add(TwigMiddleware::createFromContainer($app));
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
-$customErrorHandler = function () use ($app) {
+$customErrorHandler = function (
+    ServerRequestInterface $request,
+    Throwable $exception
+) use ($app) {
+    $actualCode = $exception->getCode();
     $response = $app->getResponseFactory()->createResponse();
-    return $this->get('view')->render($response, '404.twig.html');
+    if ($actualCode === 404) {q
+        return $this->get('view')->render($response, '404.twig.html');
+    }
 };
 $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 $router = $app->getRouteCollector()->getRouteParser();
@@ -114,7 +122,7 @@ $app->get('/urls/{id:\d+}', function ($request, $response, $args) {
     $selectedUrl = $stmt->fetch();
 
     if (empty($selectedUrl)) {
-        return $this->get('view')->render($response, "404.twig.html");
+        throw new HttpNotFoundException($request);
     }
 
     $queryCheck = 'SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC';
