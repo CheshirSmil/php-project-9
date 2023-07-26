@@ -62,7 +62,6 @@ $container->set('client', function () {
 });
 
 $app = AppFactory::createFromContainer($container);
-
 $app->add(MethodOverrideMiddleware::class);
 $app->add(TwigMiddleware::createFromContainer($app));
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
