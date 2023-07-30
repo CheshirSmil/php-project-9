@@ -74,6 +74,8 @@ $customErrorHandler = function (
     $response = $app->getResponseFactory()->createResponse();
     if ($actualCode === 404 || $actualCode === 405) {
         return $this->get('view')->render($response, '404.twig.html');
+    } else {
+        return $this->get('view')->render($response, '500.twig.html');
     }
 };
 $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
