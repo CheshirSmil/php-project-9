@@ -75,6 +75,7 @@ $customErrorHandler = function (
     if ($actualCode === 404 || $actualCode === 405) {
         return $this->get('view')->render($response, '404.twig.html');
     } else {
+        $this->get('flash')->clearMessages();
         return $this->get('view')->render($response, '500.twig.html');
     }
 };
@@ -194,7 +195,6 @@ $app->post('/urls/{url_id:\d+}/checks', function ($request, $response, $args) us
         $this->get('flash')->addMessage('success', 'Страница успешно проверена');
     } catch (RequestException $e) {
         $res = $e->getResponse();
-        $this->get('flash')->clearMessages();
         $errorMessage = 'Проверка была выполнена успешно, но сервер ответил c ошибкой';
         $this->get('flash')->addMessage('error', $errorMessage);
     } catch (ConnectException $e) {
